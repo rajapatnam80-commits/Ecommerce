@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartly – Online Store</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1c2620;--muted:#68746c;--line:#e3e0d6;--accent:#0f6b4f;--accent-soft:#e2f1ea;--danger:#b8323f;--warn:#b7791f;--shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(28,38,32,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#101612;--card:#18211b;--ink:#eaf1ec;--muted:#93a399;--line:#28352d;--accent:#4cc79a;--accent-soft:#1c3328;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.bar{max-width:1100px;margin:auto;display:flex;align-items:center;gap:8px;padding:10px 16px;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--accent);margin-right:auto;cursor:pointer;background:none;border:0}
+nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.link{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;color:var(--muted)}
+.link.on{background:var(--accent-soft);color:var(--accent)}
+.btn{border:0;background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.btn.sm{padding:6px 10px;font-size:14px}
+.btn.danger{background:none;color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.badge{background:var(--accent);color:#fff;border-radius:99px;font-size:12px;padding:1px 7px;margin-left:4px}
+.role{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 8px;color:var(--muted)}
+main{max-width:1100px;margin:auto;padding:20px 16px 70px}
+h2{margin:0 0 14px;font-size:22px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 5px}
+textarea{min-height:70px;resize:vertical}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.tools input{flex:2 1 200px}.tools select{flex:1 1 140px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.prod .pic{font-size:52px;text-align:center;background:var(--accent-soft);border-radius:10px;padding:14px 0}
+.prod h3{margin:4px 0 0;font-size:16px}
+.prod p{margin:0;color:var(--muted);font-size:14px;flex:1}
+.price{font-weight:800;font-size:18px}
+.stock{font-size:13px;color:var(--muted)}.stock.low{color:var(--warn)}.stock.out{color:var(--danger)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.wrap{overflow-x:auto}
+.status{font-weight:700;font-size:13px;padding:2px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.status.Pending{background:#fff3d6;color:#8a5a00}.status.Cancelled{background:#fde3e5;color:var(--danger)}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;background:var(--card);border:1px dashed var(--line);border-radius:12px}
+.overlay{position:fixed;inset:0;background:rgba(10,16,12,.55);display:grid;place-items:center;padding:16px;z-index:10}
+.modal{background:var(--card);border-radius:16px;padding:22px;width:100%;max-width:460px;max-height:92vh;overflow:auto}
+.modal h2{margin-bottom:4px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,100%);background:var(--card);z-index:11;padding:18px;overflow:auto;box-shadow:-8px 0 30px rgba(0,0,0,.25)}
+.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.item .em{font-size:28px}.item .grow{flex:1}
+.qty{display:flex;align-items:center;gap:6px}.qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+.err{color:var(--danger);font-size:14px;min-height:20px;margin:8px 0 0}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30}
+@media(max-width:640px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <button class="logo" onclick="go('shop')">Cartly</button>
+  <nav id="nav"></nav>
+</div></header>
+<main id="main"></main>
+<div id="layer"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '₹' + Number(n).toLocaleString('en-IN');
+const fmtDate = d => new Date(d).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+let token = localStorage.getItem('token');
+let user = JSON.parse(localStorage.getItem('user') || 'null');
+let products = [], cart = JSON.parse(localStorage.getItem('cart') || '[]');
+let view = 'shop', adminTab = 'products', filters = { search: '', category: 'all' }, editingId = null;
+
+/* ---------- API helper ---------- */
+async function api(path, opts = {}) {
+  const res = await fetch('/api' + path, {
+    method: opts.method || 'GET',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 401 && token) logout(true);
+    throw new Error(data.message || 'Something went wrong');
+  }
+  return data;
+}
+function toast(m) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; t.setAttribute('role','status'); document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+const saveCart = () => localStorage.setItem('cart', JSON.stringify(cart));
+
+/* ---------- Navigation ---------- */
+function renderNav() {
+  const count = cart.reduce((s, c) => s + c.qty, 0);
+  $('nav').innerHTML = `
+    <button class="link ${view==='shop'?'on':''}" onclick="go('shop')">Shop</button>
+    ${user && user.role === 'user' ? `<button class="link ${view==='orders'?'on':''}" onclick="go('orders')">My orders</button>` : ''}
+    ${user && user.role === 'admin' ? `<button class="link ${view==='admin'?'on':''}" onclick="go('admin')">Admin panel</button>` : ''}
+    ${!user || user.role === 'user' ? `<button class="link" onclick="openCart()">Cart<span class="badge">${count}</span></button>` : ''}
+    ${user ? `<span class="role">${esc(user.name)} · ${user.role}</span><button class="btn ghost sm" onclick="logout()">Log out</button>`
+           : `<button class="btn sm" onclick="openAuth()">Log in</button>`}`;
+}
+function go(v) { view = v; render(); window.scrollTo(0, 0); }
+function render() { renderNav(); ({ shop: renderShop, orders: renderOrders, admin: renderAdmin })[view](); }
+
+/* ---------- Auth ---------- */
+let authMode = 'login';
+function openAuth(mode) {
+  authMode = mode || 'login';
+  const reg = authMode === 'register';
+  $('layer').innerHTML = `<div class="overlay" onclick="if(event.target===this)closeLayer()"><div class="modal" role="dialog" aria-modal="true">
+    <h2>${reg ? 'Create account' : 'Log in'}</h2>
+    ${reg ? '<label for="aName">Full name</label><input id="aName" autocomplete="name">' : ''}
+    <label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email">
+    <label for="aPass">Password</label><input id="aPass" type="password" autocomplete="${reg?'new-password':'current-password'}">
+    <p class="err" id="aErr" role="alert"></p>
+    <div class="row" style="margin-top:14px">
+      <button class="link" onclick="openAuth('${reg?'login':'register'}')">${reg ? 'I already have an account' : 'Create an account'}</button>
+      <button class="btn" onclick="submitAuth()">${reg ? 'Create account' : 'Log in'}</button>
+    </div>
+    ${reg ? '' : '<p class="stock">Demo: admin@shop.com / admin123 · user@shop.com / user123</p>'}
+  </div></div>`;
+  $(reg ? 'aName' : 'aEmail').focus();
+  $('aPass').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+}
+async function submitAuth() {
+  try {
+    const body = { email: $('aEmail').value, password: $('aPass').value };
+    if (authMode === 'register') body.name = $('aName').value;
+    const d = await api('/auth/' + authMode, { method: 'POST', body });
+    token = d.token; user = d.user;
+    localStorage.setItem('token', token); localStorage.setItem('user', JSON.stringify(user));
+    closeLayer(); view = user.role === 'admin' ? 'admin' : 'shop'; render();
+    toast('Welcome, ' + user.name);
+  } catch (e) { $('aErr').textContent = e.message; }
+}
+function logout(expired) {
+  token = null; user = null; localStorage.removeItem('token'); localStorage.removeItem('user');
+  view = 'shop'; render();
+  if (expired) toast('Session expired, please log in again');
+}
+function closeLayer() { $('layer').innerHTML = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLayer(); });
+
+/* ---------- Shop (catalog) ---------- */
+async function loadProducts() {
+  const q = new URLSearchParams({ search: filters.search, category: filters.category });
+  products = await api('/products?' + q);
+}
+async function renderShop() {
+  $('main').innerHTML = `<h2>Products</h2>
+    <div class="tools">
+      <input id="fSearch" type="search" placeholder="Search products" aria-label="Search products" value="${esc(filters.search)}">
+      <select id="fCat" aria-label="Category"></select>
+    </div><div id="grid" class="grid"></div>`;
+  $('fSearch').oninput = debounce(async e => { filters.search = e.target.value; await refreshGrid(); }, 250);
+  $('fCat').onchange = async e => { filters.category = e.target.value; await refreshGrid(); };
+  await refreshGrid(true);
+}
+async function refreshGrid(fillCats) {
+  try {
+    if (fillCats) {
+      const all = await api('/products');
+      const cats = [...new Set(all.map(p => p.category))].sort();
+      $('fCat').innerHTML = '<option value="all">All categories</option>' + cats.map(c => `<option ${c===filters.category?'selected':''}>${esc(c)}</option>`).join('');
+    }
+    await loadProducts();
+    $('grid').innerHTML = products.length ? products.map(p => `
+      <article class="prod">
+        <div class="pic" aria-hidden="true">${esc(p.emoji)}</div>
+        <h3>${esc(p.name)}</h3><p>${esc(p.description)}</p>
+        <div class="row"><span class="price">${money(p.price)}</span>
+          <span class="stock ${p.stock===0?'out':p.stock<=5?'low':''}">${p.stock===0?'Out of stock':p.stock<=5?'Only '+p.stock+' left':p.stock+' in stock'}</span></div>
+        ${!user || user.role === 'user' ? `<button class="btn" ${p.stock===0?'disabled':''} onclick="addToCart('${p._id}')">Add to cart</button>` : ''}
+      </article>`).join('') : '<div class="empty" style="grid-column:1/-1">No products match your search.</div>';
+  } catch (e) { $('grid').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+/* ---------- Cart & checkout ---------- */
+function addToCart(id) {
+  const p = products.find(p => p._id === id); if (!p) return;
+  const line = cart.find(c => c.id === id);
+  if (line) { if (line.qty >= p.stock) return toast('No more stock available'); line.qty++; }
+  else cart.push({ id, qty: 1, name: p.name, price: p.price, emoji: p.emoji, stock: p.stock });
+  saveCart(); renderNav(); toast('Added to cart');
+}
+function changeQty(id, d) {
+  const l = cart.find(c => c.id === id); if (!l) return;
+  l.qty += d;
+  if (l.qty > l.stock) l.qty = l.stock;
+  if (l.qty <= 0) cart = cart.filter(c => c.id !== id);
+  saveCart(); renderNav(); openCart();
+}
+function openCart() {
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  $('layer').innerHTML = `<div class="overlay" onclick="if(event.target===this)closeLayer()"><aside class="drawer" role="dialog" aria-label="Shopping cart">
+    <div class="row"><h2>Your cart</h2><button class="link" onclick="closeLayer()">Close</button></div>
+    ${cart.length ? cart.map(c => `<div class="item"><span class="em">${esc(c.emoji)}</span>
+      <div class="grow"><b>${esc(c.name)}</b><div class="stock">${money(c.price)} each</div></div>
+      <div class="qty"><button onclick="changeQty('${c.id}',-1)" aria-label="Decrease">−</button><span>${c.qty}</span><button onclick="changeQty('${c.id}',1)" aria-label="Increase">+</button></div></div>`).join('') : '<div class="empty">Your cart is empty.</div>'}
+    ${cart.length ? `<div class="row" style="margin:16px 0"><b>Total</b><span class="price">${money(total)}</span></div>
+      <button class="btn" style="width:100%" onclick="startCheckout()">Checkout</button>` : ''}
+  </aside></div>`;
+}
+function startCheckout() {
+  if (!user) { closeLayer(); toast('Log in to place your order'); return openAuth(); }
+  if (user.role === 'admin') return toast('Admins cannot place orders');
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  $('layer').innerHTML = `<div class="overlay" onclick="if(event.target===this)closeLayer()"><div class="modal" role="dialog" aria-modal="true">
+    <h2>Checkout</h2><p class="stock">${cart.length} item(s) · Total ${money(total)} · Payment: Cash on delivery</p>
+    <label for="addr">Delivery address</label><textarea id="addr"></textarea>
+    <p class="err" id="cErr" role="alert"></p>
+    <div class="row" style="margin-top:14px"><button class="btn ghost" onclick="openCart()">Back to cart</button><button class="btn" id="placeBtn" onclick="placeOrder()">Place order</button></div>
+  </div></div>`;
+  $('addr').focus();
+}
+async function placeOrder() {
+  $('placeBtn').disabled = true;
+  try {
+    await api('/orders', { method: 'POST', body: { address: $('addr').value, items: cart.map(c => ({ productId: c.id, qty: c.qty })) } });
+    cart = []; saveCart(); closeLayer(); toast('Order placed'); go('orders');
+  } catch (e) { $('cErr').textContent = e.message; $('placeBtn').disabled = false; }
+}
+
+/* ---------- Order tracking (user) ---------- */
+async function renderOrders() {
+  $('main').innerHTML = '<h2>My orders</h2><div id="ol"></div>';
+  try {
+    const orders = await api('/orders/mine');
+    $('ol').innerHTML = orders.length ? orders.map(o => `<div class="panel">
+      <div class="row"><b>Order #${o._id.slice(-6).toUpperCase()}</b><span class="status ${o.status}">${o.status}</span></div>
+      <div class="stock">${fmtDate(o.createdAt)} · Deliver to: ${esc(o.address)}</div>
+      ${o.items.map(i => `<div class="row" style="margin-top:6px"><span>${esc(i.name)} × ${i.qty}</span><span>${money(i.price * i.qty)}</span></div>`).join('')}
+      <div class="row" style="margin-top:10px"><b>Total</b><b>${money(o.total)}</b></div></div>`).join('')
+      : '<div class="empty">You have no orders yet. Browse the shop to place your first one.</div>';
+  } catch (e) { $('ol').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+/* ---------- Admin panel ---------- */
+function renderAdmin() {
+  if (!user || user.role !== 'admin') { $('main').innerHTML = '<div class="empty">Admin access required.</div>'; return; }
+  $('main').innerHTML = `<h2>Admin panel</h2>
+    <div style="margin-bottom:14px"><button class="link ${adminTab==='products'?'on':''}" onclick="adminTab='products';renderAdmin()">Products</button>
+    <button class="link ${adminTab==='orders'?'on':''}" onclick="adminTab='orders';renderAdmin()">Orders</button></div><div id="adm"></div>`;
+  adminTab === 'products' ? adminProducts() : adminOrders();
+}
+async function adminProducts() {
+  try {
+    const list = await api('/products');
+    const e = list.find(p => p._id === editingId) || {};
+    $('adm').innerHTML = `<div class="panel"><b>${editingId ? 'Edit product' : 'Add product'}</b>
+      <div class="two"><div><label for="pName">Name</label><input id="pName" value="${esc(e.name)}"></div>
+      <div><label for="pCat">Category</label><input id="pCat" value="${esc(e.category || 'General')}"></div>
+      <div><label for="pPrice">Price (₹)</label><input id="pPrice" type="number" min="0" value="${e.price ?? ''}"></div>
+      <div><label for="pStock">Stock</label><input id="pStock" type="number" min="0" value="${e.stock ?? ''}"></div>
+      <div><label for="pEmoji">Emoji icon</label><input id="pEmoji" maxlength="4" value="${esc(e.emoji || '📦')}"></div>
+      <div><label for="pDesc">Description</label><input id="pDesc" value="${esc(e.description)}"></div></div>
+      <p class="err" id="pErr" role="alert"></p>
+      <button class="btn" onclick="saveProduct()">${editingId ? 'Save changes' : 'Add product'}</button>
+      ${editingId ? '<button class="btn ghost" onclick="editingId=null;adminProducts()">Cancel</button>' : ''}</div>
+      <div class="panel wrap"><table class="tbl"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody>
+      ${list.map(p => `<tr><td>${esc(p.emoji)} ${esc(p.name)}</td><td>${esc(p.category)}</td><td>${money(p.price)}</td><td>${p.stock}</td>
+        <td><button class="btn ghost sm" onclick="editingId='${p._id}';adminProducts()">Edit</button>
+        <button class="btn danger sm" onclick="delProduct('${p._id}')">Delete</button></td></tr>`).join('')}</tbody></table></div>`;
+  } catch (er) { $('adm').innerHTML = `<div class="empty">${esc(er.message)}</div>`; }
+}
+async function saveProduct() {
+  const body = { name: $('pName').value, category: $('pCat').value, price: $('pPrice').value, stock: $('pStock').value, emoji: $('pEmoji').value, description: $('pDesc').value };
+  try {
+    await api(editingId ? '/products/' + editingId : '/products', { method: editingId ? 'PUT' : 'POST', body });
+    toast(editingId ? 'Product updated' : 'Product added'); editingId = null; adminProducts();
+  } catch (e) { $('pErr').textContent = e.message; }
+}
+async function delProduct(id) {
+  if (!confirm('Delete this product?')) return;
+  try { await api('/products/' + id, { method: 'DELETE' }); toast('Product deleted'); adminProducts(); } catch (e) { toast(e.message); }
+}
+async function adminOrders() {
+  try {
+    const orders = await api('/orders');
+    $('adm').innerHTML = orders.length ? `<div class="panel wrap"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody>
+      ${orders.map(o => `<tr><td>#${o._id.slice(-6).toUpperCase()}<div class="stock">${fmtDate(o.createdAt)}</div></td>
+        <td>${esc(o.user ? o.user.name : 'Deleted user')}<div class="stock">${esc(o.address)}</div></td>
+        <td>${o.items.map(i => esc(i.name) + ' × ' + i.qty).join('<br>')}</td><td>${money(o.total)}</td>
+        <td><select onchange="setStatus('${o._id}',this.value)" ${o.status==='Cancelled'?'disabled':''} aria-label="Order status">
+          ${['Pending','Shipped','Delivered','Cancelled'].map(s => `<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('')}
+      </tbody></table></div>` : '<div class="empty">No orders have been placed yet.</div>';
+  } catch (e) { $('adm').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+async function setStatus(id, status) {
+  if (status === 'Cancelled' && !confirm('Cancel this order? Stock will be returned.')) return adminOrders();
+  try { await api('/orders/' + id + '/status', { method: 'PATCH', body: { status } }); toast('Order marked ' + status); adminOrders(); }
+  catch (e) { toast(e.message); adminOrders(); }
+}
+
+/* ---------- Start ---------- */
+(async () => {
+  if (token) { try { user = (await api('/auth/me')).user; localStorage.setItem('user', JSON.stringify(user)); } catch { /* logout handled */ } }
+  if (user && user.role === 'admin') view = 'admin';
+  render();
+})();
+</script>
+</body>
+</html>
